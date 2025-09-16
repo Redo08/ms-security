@@ -6,6 +6,7 @@ import jdr.ms_security.Models.User;
 import jdr.ms_security.Repositories.ProfileRepository;
 import jdr.ms_security.Repositories.SessionRepository;
 import jdr.ms_security.Repositories.UserRepository;
+import jdr.ms_security.Services.EncryptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,26 +25,34 @@ public class UsersController {
     @Autowired
     private ProfileRepository theProfileRepository;
 
+    @Autowired
+    private EncryptionService theEncryptionService;
+
     @GetMapping("") // Cuando sea GET se activan estos metodos
     public List<User> find(){
         return this.theUserRepository.findAll();
     }
+
     @GetMapping("{id}")
     public User findById(@PathVariable String id){ // @PathVariable permite identificar el identificador que viene en la Ruta
         User theUser=this.theUserRepository.findById(id).orElse(null);
         return theUser;
     }
+
     @PostMapping
     public User create(@RequestBody User newUser){  // El casteo permite que el JSON se convierta en Objeto
+        //Tarea en la sustentacion sale validar que el usuario que se va a crear no exista ya con el correo
+        newUser.setPassword(this.theEncryptionService.convertSHA256(newUser.getPassword()));
         return this.theUserRepository.save(newUser);
     }
+
     @PutMapping("{id}")
     public User update(@PathVariable String id, @RequestBody User newUser){
         User actualUser=this.theUserRepository.findById(id).orElse(null);
         if(actualUser!=null){
             actualUser.setName(newUser.getName());
             actualUser.setEmail(newUser.getEmail());
-            actualUser.setPassword(newUser.getPassword());
+            actualUser.setPassword(this.theEncryptionService.convertSHA256(newUser.getPassword()));
             this.theUserRepository.save(actualUser);
             return actualUser;
         }else{

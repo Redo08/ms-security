@@ -12,19 +12,25 @@ public class RolePermission {
     private String _id;
 
     @DBRef
-    private Permission permission;  // Poner ambas en el constructor es correcto también.
-    @DBRef
     private Role role;
 
-    public RolePermission() {
-    }
+    @DBRef
+    private Permission permission;
 
+    public  RolePermission(){
+
+    }
     public String get_id() {
         return _id;
     }
 
-    public void set_id(String _id) {
-        this._id = _id;
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     public Permission getPermission() {
@@ -33,13 +39,5 @@ public class RolePermission {
 
     public void setPermission(Permission permission) {
         this.permission = permission;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
     }
 }
