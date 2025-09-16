@@ -11,6 +11,9 @@ public class Profile {
     @DBRef
     private User user;
 
+    public Profile(){
+
+    }
     public Profile(String phone, String photo) {
         this.phone = phone;
         this.photo = photo;
