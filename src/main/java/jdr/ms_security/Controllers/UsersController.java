@@ -6,6 +6,7 @@ import jdr.ms_security.Models.User;
 import jdr.ms_security.Repositories.ProfileRepository;
 import jdr.ms_security.Repositories.SessionRepository;
 import jdr.ms_security.Repositories.UserRepository;
+import jdr.ms_security.Services.EncryptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +25,9 @@ public class UsersController {
     @Autowired
     private ProfileRepository theProfileRepository;
 
+    @Autowired
+    private EncryptionService theEncryptionService;
+
     @GetMapping("") // Cuando sea GET se activan estos metodos
     public List<User> find(){
         return this.theUserRepository.findAll();
@@ -35,6 +39,12 @@ public class UsersController {
     }
     @PostMapping
     public User create(@RequestBody User newUser){  // El casteo permite que el JSON se convierta en Objeto
+        // Ciframos la contraseña antes de enviarlo a la base de datos.
+        newUser.setPassword(this.theEncryptionService.convertSHA256(newUser.getPassword()));
+
+        // TAREA, Validar que el usuario que se quiere crear no exista ya con ese mismo correo.
+
+        // Verificación que el correo sea unicA
         return this.theUserRepository.save(newUser);
     }
     @PutMapping("{id}")
@@ -43,7 +53,7 @@ public class UsersController {
         if(actualUser!=null){
             actualUser.setName(newUser.getName());
             actualUser.setEmail(newUser.getEmail());
-            actualUser.setPassword(newUser.getPassword());
+            actualUser.setPassword(this.theEncryptionService.convertSHA256(newUser.getPassword()));
             this.theUserRepository.save(actualUser);
             return actualUser;
         }else{
