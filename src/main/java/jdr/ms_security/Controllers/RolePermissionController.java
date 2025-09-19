@@ -66,7 +66,7 @@ public class RolePermissionController {
 
     @DeleteMapping("permission/{permissionId}/role/{roleId}")
     public void deleteByPermissionandRole(@PathVariable String permissionId, @PathVariable String roleId) {
-        RolePermission toDelete = this.theRolePermissionRepository.getPermissionByPermissionAndRole(permissionId, roleId);
+        RolePermission toDelete = this.theRolePermissionRepository.getRolePermission(roleId, permissionId);
         this.theRolePermissionRepository.delete(toDelete);
     }
 
