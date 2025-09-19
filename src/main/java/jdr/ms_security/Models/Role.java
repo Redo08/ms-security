@@ -12,10 +12,12 @@ public class Role {
     private String name;
     private String description;
 
+    public Role() {}
     public Role(String name, String description) {
         this.name = name;
         this.description = description;
     }
+    //Comment
 
     public String get_id() {
         return _id;

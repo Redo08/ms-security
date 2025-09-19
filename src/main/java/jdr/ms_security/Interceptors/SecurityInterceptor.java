@@ -12,9 +12,6 @@ import org.springframework.web.servlet.ModelAndView;
 public class SecurityInterceptor implements HandlerInterceptor { // El HandlerInterceptos es una interfaz que tenemos que sobreescribir unos metodos obligatorios
     @Autowired
     private ValidatorsService validatorService;
-    /**
-     * Es para cuando entra
-     * **/
     @Override
     public boolean preHandle(HttpServletRequest request, // La carta
                              HttpServletResponse response, // El codigo de estado (401)

@@ -1,12 +1,13 @@
 package jdr.ms_security.Services;
 
 
+
+import jakarta.servlet.http.HttpServletRequest;
 import jdr.ms_security.Models.*;
 import jdr.ms_security.Repositories.PermissionRepository;
 import jdr.ms_security.Repositories.RolePermissionRepository;
 import jdr.ms_security.Repositories.UserRepository;
 import jdr.ms_security.Repositories.UserRoleRepository;
-import jakarta.servlet.http.HttpServletRequest;  // Clase de spring Boot que permite obtener la carta
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,7 +48,7 @@ public class ValidatorsService {
                 Role theRole=actual.getRole();
                 if(theRole!=null && thePermission!=null){
                     System.out.println("Rol "+theRole.get_id()+ " Permission "+thePermission.get_id());
-                    RolePermission theRolePermission=this.theRolePermissionRepository.getPermissionByPermissionAndRole(thePermission.get_id(), theRole.get_id()); // Encontro la intermedia con el permiso y el rol
+                    RolePermission theRolePermission=this.theRolePermissionRepository.getRolePermission(thePermission.get_id(),theRole.get_id()); // Encontro la intermedia con el permiso y el rol
                     if (theRolePermission!=null){
                         success=true; // Si existe el permiso
                     }

@@ -7,6 +7,8 @@ import java.security.NoSuchAlgorithmException;
 
 @Service // Notación para servicios
 public class EncryptionService {
+
+    //convierte el string con permutaciones, lo covierte a una cadena de texto larga
     public String convertSHA256(String password) {
         MessageDigest md = null;
         try {

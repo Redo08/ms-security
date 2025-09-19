@@ -37,24 +37,23 @@ public class SecurityController {
 
     @PostMapping("login")
     // HashMap es como un diccionario
-    public HashMap<String,Object> login(@RequestBody User theNewUser,
-                                        final HttpServletResponse response)throws IOException {
-        HashMap<String,Object> theResponse=new HashMap<>();
-        String token="";
-        User theActualUser=this.theUserRepository.getUserByEmail(theNewUser.getEmail());
-        if(theActualUser!=null &&
-           theActualUser.getPassword().equals(theEncryptionService.convertSHA256(theNewUser.getPassword()))){
-            token=theJwtService.generateToken(theActualUser);
+    public HashMap<String, Object> login(@RequestBody User theNewUser,
+                                         final HttpServletResponse response) throws IOException {
+        HashMap<String, Object> theResponse = new HashMap<>();
+        String token = "";
+        User theActualUser = this.theUserRepository.getUserByEmail(theNewUser.getEmail());
+        if (theActualUser != null &&
+                theActualUser.getPassword().equals(theEncryptionService.convertSHA256(theNewUser.getPassword()))) {
+
+            token = theJwtService.generateToken(theActualUser);
             theActualUser.setPassword("");
-            theResponse.put("token",token);
-            theResponse.put("user",theActualUser);
+            theResponse.put("token", token);
+            theResponse.put("user", theActualUser);
             return theResponse;
-        }else{
+        } else {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);  // Error 401 de no estar autorizado
-            return  theResponse;
+            return theResponse;
         }
     }
-
-
 
 }

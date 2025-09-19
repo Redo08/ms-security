@@ -32,11 +32,13 @@ public class UsersController {
     public List<User> find(){
         return this.theUserRepository.findAll();
     }
+
     @GetMapping("{id}")
     public User findById(@PathVariable String id){ // @PathVariable permite identificar el identificador que viene en la Ruta
         User theUser=this.theUserRepository.findById(id).orElse(null);
         return theUser;
     }
+
     @PostMapping
     public User create(@RequestBody User newUser){  // El casteo permite que el JSON se convierta en Objeto
         // Ciframos la contraseña antes de enviarlo a la base de datos.
@@ -47,6 +49,7 @@ public class UsersController {
         // Verificación que el correo sea unicA
         return this.theUserRepository.save(newUser);
     }
+
     @PutMapping("{id}")
     public User update(@PathVariable String id, @RequestBody User newUser){
         User actualUser=this.theUserRepository.findById(id).orElse(null);
