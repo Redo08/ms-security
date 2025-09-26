@@ -1,5 +1,6 @@
 package jdr.ms_security.Controllers;
 
+import io.jsonwebtoken.io.IOException;
 import jdr.ms_security.Models.Profile;
 import jdr.ms_security.Models.Session;
 import jdr.ms_security.Models.User;
@@ -8,7 +9,9 @@ import jdr.ms_security.Repositories.SessionRepository;
 import jdr.ms_security.Repositories.UserRepository;
 import jdr.ms_security.Services.EncryptionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -40,13 +43,21 @@ public class UsersController {
     }
 
     @PostMapping
-    public User create(@RequestBody User newUser){  // El casteo permite que el JSON se convierta en Objeto
-        // Ciframos la contraseña antes de enviarlo a la base de datos.
-        newUser.setPassword(this.theEncryptionService.convertSHA256(newUser.getPassword()));
+    public User create(@RequestBody User newUser) {
+        // Cifrar la contraseña si no viene vacía
+        if (newUser.getPassword() != null && !newUser.getPassword().isEmpty()) {
+            newUser.setPassword(this.theEncryptionService.convertSHA256(newUser.getPassword()));
+        }
 
-        // TAREA, Validar que el usuario que se quiere crear no exista ya con ese mismo correo.
+        // Validar que no exista un usuario con el mismo correo
+        if (theUserRepository.getUserByEmail(newUser.getEmail()) != null) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT, // 409 Conflict
+                    "Ya existe un usuario con el correo: " + newUser.getEmail()
+            );
+        }
 
-        // Verificación que el correo sea unicA
+        // Si pasa las validaciones, se guarda
         return this.theUserRepository.save(newUser);
     }
 
