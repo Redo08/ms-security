@@ -11,10 +11,12 @@ public class Permission {
     private String _id;
     private String url;
     private String method;
+    private String model;  // Por ejemplo, 'User', 'Role', 'Permission' para asignar permisos
 
-    public Permission(String url, String method) {
+    public Permission(String url, String method, String model) {
         this.url = url;
         this.method = method;
+        this.model = model;
     }
 
     public String get_id() {
@@ -35,5 +37,13 @@ public class Permission {
 
     public void setMethod(String method) {
         this.method = method;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
     }
 }
