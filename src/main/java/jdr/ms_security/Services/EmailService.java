@@ -11,20 +11,26 @@ import java.net.http.HttpResponse;
 
 @Service
 public class EmailService {
-    @Value("${notification-service}")
+    @Value("${notification-service}") // URL del microservicio notificaciones FLASK
     private String url;
 
+    /*
+    * @param to Correo de destino
+    * @param subject Asunto del correo
+    * @param body Contenido del correo
+    * @param is_html Indica si el cuerpo es HTML
+    * */
     public void sendEmail(String to, String subject, String body, boolean is_html) {
         try {
             // JSON que enviaremos
-            String jsonBody = """
-                {
-                  "to": `${to}`,
-                  "subject": "Correo desde Java organizado con la url privada",
-                  "body": "<h1>Hola </h1><p>Este correo fue enviado desde un cliente Java en IntelliJ.</p>",
-                  "is_html": true
-                }
-                """;
+            String jsonBody = String.format("""
+                    {
+                    "to": "%s",
+                    "subject": "%s",
+                    "body": "%s",
+                    "is_html": %b
+                    }
+                    """, to, subject.replace("\"", "\\\""), body.replace("\"", "\\\""), is_html);
 
             // Crear cliente
             HttpClient client = HttpClient.newHttpClient();
@@ -39,11 +45,16 @@ public class EmailService {
             // Enviar y obtener respuesta
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            System.out.println("Status Code: " + response.statusCode());
-            System.out.println("Response Body: " + response.body());
+            // Manejo de errores
+            if (response.statusCode() != 200) {
+                System.err.println("Error al enviar correo (Flask Status: " + response.statusCode() + "): " + response.body());
+                throw new RuntimeException("Fallo al enviar el correo a través del microservicio de notificaciones.");
+            }
+            System.out.println("Enviado exitosamente, Status Code: " + response.statusCode());
 
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException("Error en la comunicación con el servicio de correos.", e);
         }
     }
 }

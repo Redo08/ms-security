@@ -43,18 +43,29 @@ public class UsersController {
     }
 
     @PostMapping
-    public User create(@RequestBody User newUser) {
-        // Cifrar la contraseña si no viene vacía
-        if (newUser.getPassword() != null && !newUser.getPassword().isEmpty()) {
-            newUser.setPassword(this.theEncryptionService.convertSHA256(newUser.getPassword()));
-        }
-
+    public User create(@RequestBody User newUser, @RequestParam(defaultValue = "false") boolean isSocial) {
         // Validar que no exista un usuario con el mismo correo
         if (theUserRepository.getUserByEmail(newUser.getEmail()) != null) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT, // 409 Conflict
                     "Ya existe un usuario con el correo: " + newUser.getEmail()
             );
+        }
+
+        // Determinar si viene de un login social (Miramos si lo devuelve con el photoUrl)
+        if (isSocial) {
+            // Desactivamos el 2FA
+            newUser.setTwoFactorEnabled(false);
+        } else {
+            // Registro tradicional
+
+            // Cifrar la contraseña si no viene vacía
+            if (newUser.getPassword() != null && !newUser.getPassword().isEmpty()) {
+                newUser.setPassword(this.theEncryptionService.convertSHA256(newUser.getPassword()));
+            }
+
+            // Activamos el 2FA
+            newUser.setTwoFactorEnabled(true);
         }
 
         // Si pasa las validaciones, se guarda
