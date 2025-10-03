@@ -54,52 +54,56 @@ public class UsersController {
 
     @PostMapping
     public User create(@RequestBody User newUser, @RequestParam(defaultValue = "false") boolean isSocial) {
-        User existingUser = theUserRepository.getUserByEmail(newUser.getEmail());
-
-        // Caso 1: Login social
+        // Validar que no exista un usuario con el mismo correo
         if (isSocial) {
-            if (existingUser != null) {
-                // Caso conflictivo → ya existe con contraseña
-                if (existingUser.getPassword() != null && !existingUser.getPassword().isEmpty()) {
+            User theActualUser = theUserRepository.getUserByEmail(newUser.getEmail());
+            if (theActualUser!=null){
+                System.out.println("user "+theActualUser);
+                if (theActualUser.getPassword() != null && !theActualUser.getPassword().isEmpty()) {
                     throw new ResponseStatusException(
                             HttpStatus.FORBIDDEN,
-                            "No se puede hacer login social con una cuenta que tiene correo y contraseña"
+                            "No se puede hacer login Social con una cuenta que tiene correo y contraseña"
                     );
                 }
-                // Caso válido → el usuario existe y fue creado por login social → simplemente retornarlo
-                return existingUser;
             }
-            // Si no existe, creamos nuevo usuario sin 2FA ni contraseña
-            newUser.setTwoFactorEnabled(false);
-            newUser.setPassword(null);
+
+        }
+        if (theUserRepository.getUserByEmail(newUser.getEmail()) != null) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT, // 409 Conflict
+                    "Ya existe un usuario con el correo: " + newUser.getEmail()
+            );
         }
 
-        // Caso 2: Registro tradicional
-        else {
-            if (existingUser != null) {
-                throw new ResponseStatusException(
-                        HttpStatus.CONFLICT, // 409 Conflict
-                        "Ya existe un usuario con el correo: " + newUser.getEmail()
-                );
-            }
+        // Determinar si viene de un login social (Miramos si lo devuelve con el photoUrl)
+        if (isSocial) {
+            // Desactivamos el 2FA
+            newUser.setTwoFactorEnabled(false);
+        } else {
+            // Registro tradicional
+            // Cifrar la contraseña si no viene vacía
             if (newUser.getPassword() != null && !newUser.getPassword().isEmpty()) {
                 newUser.setPassword(this.theEncryptionService.convertSHA256(newUser.getPassword()));
             }
+
+            // Activamos el 2FA
             newUser.setTwoFactorEnabled(true);
         }
-
-        // Guardar y enviar notificación
+        // Después de guardar el usuario exitosamente
         User savedUser = this.theUserRepository.save(newUser);
         String emailTemplate = construirPlantillaNotificacion(savedUser);
 
+
+        System.out.println("---------------------");
+        System.out.println("saved user: "+ savedUser);
         emailService.sendEmail(
                 savedUser.getEmail(),
                 "Nuevo inicio de sesión detectado",
                 emailTemplate,
                 true
         );
-
         return savedUser;
+
     }
 
     private String construirPlantillaNotificacion(User user) {
