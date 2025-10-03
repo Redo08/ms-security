@@ -35,6 +35,7 @@ public class ValidatorsService {
                                             String method){
         boolean success=false;
         User theUser=this.getUser(request);
+        System.out.println("Usuario:" + theUser);
         if(theUser!=null){
             System.out.println("Antes URL "+url+" metodo "+method);
             url = url.replaceAll("[0-9a-fA-F]{24}|\\d+", "?"); // El interrogante generaliza.
@@ -48,8 +49,9 @@ public class ValidatorsService {
                 Role theRole=actual.getRole();
                 if(theRole!=null && thePermission!=null){
                     System.out.println("Rol "+theRole.get_id()+ " Permission "+thePermission.get_id());
-                    RolePermission theRolePermission=this.theRolePermissionRepository.getRolePermission(thePermission.get_id(),theRole.get_id()); // Encontro la intermedia con el permiso y el rol
+                    RolePermission theRolePermission=this.theRolePermissionRepository.getRolePermission(theRole.get_id(),thePermission.get_id()); // Encontro la intermedia con el permiso y el rol
                     if (theRolePermission!=null){
+                        System.out.println("Funciono!");
                         success=true; // Si existe el permiso
                     }
                 }else{

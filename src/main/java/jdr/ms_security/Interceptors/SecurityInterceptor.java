@@ -20,7 +20,7 @@ public class SecurityInterceptor implements HandlerInterceptor { // El HandlerIn
         String requestURI = request.getRequestURI();
         String method = request.getMethod();
         // Aqui solo permitimos que pase el de POST para lo que tiene que ver con login/registro
-        if (requestURI.equals("/api/users") && method.equalsIgnoreCase("POST")) {
+        if (requestURI.equals("/api/users") && method.equalsIgnoreCase("POST") || requestURI.equals("/api/sessions/verify-2fa") || requestURI.equals("/api/sessions/resend-otp") ) {
                 return true; // Dejar pasar sin verificación
         }
         boolean success=this.validatorService.validationRolePermission(request,requestURI,method);
