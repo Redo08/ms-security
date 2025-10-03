@@ -2,9 +2,11 @@ package jdr.ms_security.Services;
 
 import jdr.ms_security.Models.Session;
 import jdr.ms_security.Repositories.SessionRepository;
+import jdr.ms_security.utils.TwoFATemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -13,10 +15,15 @@ public class Session2FAService {
 
     @Autowired
     private SessionRepository theSessionRepository;
+
     @Autowired
     private OptService theOtpService;
+
     @Autowired
     private EmailService theEmailService;
+
+    @Autowired
+    private TwoFATemplate twoFATemplate;
 
     /**
      * Genera un nuevo código OTP, actualiza la sesión con el código y expiración, y envía la notificación.
@@ -38,15 +45,30 @@ public class Session2FAService {
         // Guardar la sesión actualizada
         Session savedSession = this.theSessionRepository.save(session);
 
-        // Enviar el Correo OTP
-        String emailBody = String.format(
-                "Tu código de verificación de dos pasos es: %s. Este código expira en 5 minutos.",
-                otpCode
+        // Construir la plantilla HTML
+        String emailTemplate = construirPlantilla2FA(savedSession, otpCode);
+
+        // Codificar en Base64
+        String emailTemplateBase64 = Base64.getEncoder().encodeToString(emailTemplate.getBytes());
+
+        // Enviar el Correo OTP con HTML
+        theEmailService.sendEmail(
+                savedSession.getUser().getEmail(),
+                subject,
+                emailTemplateBase64,
+                true  // is_html = true
         );
-        // Usamos el usuario de la sesión para obtener el email
-        theEmailService.sendEmail(savedSession.getUser().getEmail(), subject, emailBody, false);
 
         return savedSession;
     }
-}
 
+    /**
+     * Construye la plantilla HTML del correo 2FA reemplazando las variables.
+     */
+    private String construirPlantilla2FA(Session session, String otpCode) {
+        String plantilla = twoFATemplate.getTemplate();
+        return plantilla
+                .replace("{{nombre_usuario}}", session.getUser().getName())
+                .replace("{{codigo_2fa}}", otpCode);
+    }
+}

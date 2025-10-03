@@ -12,7 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import jdr.ms_security.Services.EmailService;
+import jdr.ms_security.utils.LoginTemplate;
 
+import java.util.Date;
 import java.util.List;
 
 @CrossOrigin  // Permite que nos conectemos desde la misma maquina para hacer pruebas
@@ -30,6 +33,12 @@ public class UsersController {
 
     @Autowired
     private EncryptionService theEncryptionService;
+
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private LoginTemplate loginTemplate;
 
     @GetMapping("") // Cuando sea GET se activan estos metodos
     public List<User> find(){
@@ -67,11 +76,29 @@ public class UsersController {
             // Activamos el 2FA
             newUser.setTwoFactorEnabled(true);
         }
+        // Después de guardar el usuario exitosamente
+        User savedUser = this.theUserRepository.save(newUser);
+        String emailTemplate = construirPlantillaNotificacion(savedUser);
 
-        // Si pasa las validaciones, se guarda
-        return this.theUserRepository.save(newUser);
+
+        System.out.println("---------------------");
+        System.out.println("saved user: "+ savedUser);
+        emailService.sendEmail(
+                savedUser.getEmail(),
+                "Nuevo inicio de sesión detectado",
+                emailTemplate,
+                true
+        );
+        return savedUser;
+
     }
 
+    private String construirPlantillaNotificacion(User user) {
+        String plantilla = loginTemplate.getTemplate();
+        return plantilla
+                .replace("{{nombre_usuario}}", user.getName())
+                .replace("{{fecha_hora}}", new Date().toString());
+    }
     @PutMapping("{id}")
     public User update(@PathVariable String id, @RequestBody User newUser){
         User actualUser=this.theUserRepository.findById(id).orElse(null);
