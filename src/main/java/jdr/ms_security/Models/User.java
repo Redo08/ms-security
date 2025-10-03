@@ -68,7 +68,6 @@ public class User {
         this.twoFactorEnabled = twoFactorEnabled;
     }
 
-    // Getters y setters
     public String getFirebaseUid() {
         return firebaseUid;
     }

@@ -1,5 +1,6 @@
 package jdr.ms_security.Controllers;
 
+import com.google.api.Http;
 import io.jsonwebtoken.io.IOException;
 import jdr.ms_security.Models.Profile;
 import jdr.ms_security.Models.Session;
@@ -54,6 +55,15 @@ public class UsersController {
     @PostMapping
     public User create(@RequestBody User newUser, @RequestParam(defaultValue = "false") boolean isSocial) {
         // Validar que no exista un usuario con el mismo correo
+        if (isSocial) {
+            User theActualUser = theUserRepository.getUserByEmail(newUser.getEmail());
+            if (theActualUser.getPassword() != null || theActualUser.getPassword().isEmpty()) {
+                throw new ResponseStatusException(
+                        HttpStatus.FORBIDDEN,
+                        "No se puede hacer login Social con una cuenta que tiene correo y contraseña"
+                );
+            }
+        }
         if (theUserRepository.getUserByEmail(newUser.getEmail()) != null) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT, // 409 Conflict
@@ -67,7 +77,6 @@ public class UsersController {
             newUser.setTwoFactorEnabled(false);
         } else {
             // Registro tradicional
-
             // Cifrar la contraseña si no viene vacía
             if (newUser.getPassword() != null && !newUser.getPassword().isEmpty()) {
                 newUser.setPassword(this.theEncryptionService.convertSHA256(newUser.getPassword()));
