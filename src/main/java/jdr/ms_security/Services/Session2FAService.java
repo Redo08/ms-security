@@ -48,14 +48,11 @@ public class Session2FAService {
         // Construir la plantilla HTML
         String emailTemplate = construirPlantilla2FA(savedSession, otpCode);
 
-        // Codificar en Base64
-        String emailTemplateBase64 = Base64.getEncoder().encodeToString(emailTemplate.getBytes());
-
         // Enviar el Correo OTP con HTML
         theEmailService.sendEmail(
                 savedSession.getUser().getEmail(),
                 subject,
-                emailTemplateBase64,
+                emailTemplate,
                 true  // is_html = true
         );
 

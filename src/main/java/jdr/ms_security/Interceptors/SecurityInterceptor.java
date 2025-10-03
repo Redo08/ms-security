@@ -17,7 +17,13 @@ public class SecurityInterceptor implements HandlerInterceptor { // El HandlerIn
                              HttpServletResponse response, // El codigo de estado (401)
                              Object handler) // Es la instancia de la puerta
             throws Exception {
-        boolean success=this.validatorService.validationRolePermission(request,request.getRequestURI(),request.getMethod());
+        String requestURI = request.getRequestURI();
+        String method = request.getMethod();
+        // Aqui solo permitimos que pase el de POST para lo que tiene que ver con login/registro
+        if (requestURI.equals("/api/users") && method.equalsIgnoreCase("POST")) {
+                return true; // Dejar pasar sin verificación
+        }
+        boolean success=this.validatorService.validationRolePermission(request,requestURI,method);
         return success;
     }
 
