@@ -69,10 +69,8 @@ public class UsersController {
 
         }
         if (theUserRepository.getUserByEmail(newUser.getEmail()) != null) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT, // 409 Conflict
-                    "Ya existe un usuario con el correo: " + newUser.getEmail()
-            );
+            // 👇 En lugar de lanzar error, retorna el usuario existente
+            return theUserRepository.getUserByEmail(newUser.getEmail());
         }
 
         // Determinar si viene de un login social (Miramos si lo devuelve con el photoUrl)
