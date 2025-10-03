@@ -46,5 +46,5 @@ public class TwoFATemplate {
                 "    </div>" +
                 "</body>" +
                 "</html>";
-    }
+    } //coment
 }
