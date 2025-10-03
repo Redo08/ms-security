@@ -22,14 +22,9 @@ public class FirebaseService {
             String email = decodedToken.getEmail();
             String name = decodedToken.getName();
 
-            System.out.println("📝 Token Firebase decodificado:");
-            System.out.println("   - UID: " + uid);
-            System.out.println("   - Email del token: " + email);
-            System.out.println("   - Name del token: " + name);
 
             // Si el email no está en el token, intentar obtenerlo del usuario
             if (email == null || email.isEmpty()) {
-                System.out.println("⚠️ Email no encontrado en token, consultando Firebase Auth...");
                 email = getEmailFromFirebaseUser(uid);
             }
 
@@ -84,7 +79,7 @@ public class FirebaseService {
      */
     private String getEmailFromFirebaseUser(String uid) {
         try {
-            System.out.println("   🔍 Consultando Firebase Auth.getUser() con UID: " + uid);
+
 
             // Equivalente a: admin.auth().getUser(uid)
             UserRecord userRecord = FirebaseAuth.getInstance().getUser(uid);
@@ -94,22 +89,15 @@ public class FirebaseService {
             String photoUrl = userRecord.getPhotoUrl();
             boolean emailVerified = userRecord.isEmailVerified();
 
-            System.out.println("   ✅ Usuario obtenido de Firebase Auth:");
-            System.out.println("      - UID: " + uid);
-            System.out.println("      - Email principal: " + email);
-            System.out.println("      - Display Name: " + displayName);
-            System.out.println("      - Photo URL: " + photoUrl);
-            System.out.println("      - Email verificado: " + emailVerified);
 
             // Si el email principal es null, buscar en los providerData
             if ((email == null || email.isEmpty()) && userRecord.getProviderData() != null) {
-                System.out.println("      📧 Buscando email en providerData...");
+
                 for (com.google.firebase.auth.UserInfo providerData : userRecord.getProviderData()) {
                     String providerEmail = providerData.getEmail();
                     String providerId = providerData.getProviderId();
 
-                    System.out.println("         - Proveedor: " + providerId);
-                    System.out.println("         - Email del proveedor: " + providerEmail);
+
 
                     // Si encontramos un email en algún proveedor, usarlo
                     if (providerEmail != null && !providerEmail.isEmpty()) {

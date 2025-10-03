@@ -14,7 +14,7 @@ target/
 .sts4-cache
 
 src/main/resources/firebase-service-account.json
-src/main/java/jdr/ms_security/Configurations/FirebaseConfig.java}
+src/main/java/jdr/ms_security/Configurations/FirebaseConfig.java
 ### IntelliJ IDEA ###
 .idea
 *.iws
