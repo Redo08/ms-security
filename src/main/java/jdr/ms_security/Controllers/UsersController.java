@@ -57,12 +57,16 @@ public class UsersController {
         // Validar que no exista un usuario con el mismo correo
         if (isSocial) {
             User theActualUser = theUserRepository.getUserByEmail(newUser.getEmail());
-            if (theActualUser.getPassword() != null || theActualUser.getPassword().isEmpty()) {
-                throw new ResponseStatusException(
-                        HttpStatus.FORBIDDEN,
-                        "No se puede hacer login Social con una cuenta que tiene correo y contraseña"
-                );
+            if (theActualUser!=null){
+                System.out.println("user "+theActualUser);
+                if (theActualUser.getPassword() != null && !theActualUser.getPassword().isEmpty()) {
+                    throw new ResponseStatusException(
+                            HttpStatus.FORBIDDEN,
+                            "No se puede hacer login Social con una cuenta que tiene correo y contraseña"
+                    );
+                }
             }
+
         }
         if (theUserRepository.getUserByEmail(newUser.getEmail()) != null) {
             throw new ResponseStatusException(
