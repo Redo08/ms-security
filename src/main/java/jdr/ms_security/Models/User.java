@@ -13,6 +13,8 @@ public class User {
     private String email;
     private String password;
     private boolean twoFactorEnabled; // Necesario para el 2 step verification. Facilita la vida
+    private String firebaseUid;
+
 
     // Constructor por defecto
     public User() {  // Polimorfismo de sobrecarga because se llama igual pero uno tiene atributos y el otro no
@@ -64,5 +66,14 @@ public class User {
 
     public void setTwoFactorEnabled(boolean twoFactorEnabled) {
         this.twoFactorEnabled = twoFactorEnabled;
+    }
+
+    // Getters y setters
+    public String getFirebaseUid() {
+        return firebaseUid;
+    }
+
+    public void setFirebaseUid(String firebaseUid) {
+        this.firebaseUid = firebaseUid;
     }
 }
