@@ -17,9 +17,9 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
 
 
-        registry.addInterceptor(securityInterceptor)
-                .addPathPatterns("/api/**")  // Va a activarse para todas las que tengan esta ruta
-                .excludePathPatterns("/api/public/**"); // Menos esta, como el login.
+//        registry.addInterceptor(securityInterceptor)
+//                .addPathPatterns("/api/**")  // Va a activarse para todas las que tengan esta ruta
+//                .excludePathPatterns("/api/public/**"); // Menos esta, como el login.
 
     }
 }
