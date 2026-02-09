@@ -1,0 +1,29 @@
+
+services:
+  springboot-app:
+    # Configuración de construcción de la imagen
+    build:
+      # Contexto: directorio donde está el Dockerfile (raíz del proyecto)
+      context: .
+      
+      # Nombre del Dockerfile a utilizar
+      dockerfile: Dockerfile
+    
+    # Nombre del contenedor
+    container_name: springboot-app
+    
+    # Política de reinicio automático
+    restart: unless-stopped
+
+    ports:
+      - "8080:8080"
+    
+    # Variables de entorno que Spring Boot leerá
+    environment:
+      # Usuario administrador de MongoDB
+      SPRING_DATA_MONGODB_URI: ${MONGO_URI}
+      SPRING_DATA_MONGODB_DATABASE: ${MONGO_DATABASE}
+
+    #No necesitara network ni servicio de mongo ya que mongo esta en la nube, tampoco volumes porque mongo no esta en local
+
+
