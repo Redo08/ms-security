@@ -41,3 +41,4 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 
 # BENEFICIOS DEL MULTI-STAGE BUILD:
 # - Imagen final más pequeña (solo contiene JRE y el JAR, no Maven ni código fuente)
+#coment
